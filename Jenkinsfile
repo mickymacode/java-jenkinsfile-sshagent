@@ -71,23 +71,23 @@ pipeline {
       }
       stage('provision server') {
         environment {
-                AWS_ACCESS_KEY_ID = credentials('jenkins-aws-access-key-id')
-                AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')
-                // 更新default的env_prefix，语法是在前面加TF_VAR_
-                TF_VAR_env_prefix = 'test'
+          AWS_ACCESS_KEY_ID = credentials('jenkins-aws-access-key-id')
+          AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')
+          // 更新default的env_prefix，语法是在前面加TF_VAR_
+          TF_VAR_env_prefix = 'test'
         }
         steps {
-                script {
-                    dir('terraform') {
-                        sh "terraform init"
-                        sh "terraform apply --auto-approve"
-                        EC2_PUBLIC_IP = sh(
-                            script: "terraform output ec2_public_ip",
-                            returnStdout: true
-                        ).trim()
-                    }
+            script {
+                dir('terraform') {
+                    sh "terraform init"
+                    sh "terraform apply --auto-approve"
+                    EC2_PUBLIC_IP = sh(
+                        script: "terraform output ec2_public_ip",
+                        returnStdout: true
+                    ).trim()
                 }
-        }
+            }
+          }
       }
       stage('deploy') {
           environment {
@@ -100,7 +100,7 @@ pipeline {
 
                   echo 'deploying docker image to EC2...'
                   echo "${EC2_PUBLIC_IP}"
-                //这里传参把IMAGE_NAME传给script了， script里的$1获取第一个传入的参数
+                  //这里传参把IMAGE_NAME传给script了， script里的$1获取第一个传入的参数
                   def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME} ${DOCKER_CREDS_USR} ${DOCKER_CREDS_PSW}"
                   def ec2Instance = "ec2-user@${EC2_PUBLIC_IP}"
 
