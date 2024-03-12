@@ -75,66 +75,66 @@ pipeline {
             script {
                 dir('terraform') {
                     sh "terraform init"
-                    sh "terraform destroy --auto-approve"
-                    // EC2_PUBLIC_IP = sh(
-                    //     script: "terraform output ec2_public_ip",
-                    //     returnStdout: true
-                    // ).trim()
+                    sh "terraform apply --auto-approve"
+                    EC2_PUBLIC_IP = sh(
+                        script: "terraform output ec2_public_ip",
+                        returnStdout: true
+                    ).trim()
                 }
             }
           }
       }
-      // stage('deploy') {
-      //     environment {
-      //         DOCKER_CREDS = credentials('docker-hub-repo')
-      //     }
-      //     steps {
-      //         script {
-      //             echo "waiting for EC2 server to initialize" 
-      //             sleep(time: 90, unit: "SECONDS") 
+      stage('deploy') {
+          environment {
+              DOCKER_CREDS = credentials('docker-hub-repo')
+          }
+          steps {
+              script {
+                  echo "waiting for EC2 server to initialize" 
+                  sleep(time: 90, unit: "SECONDS") 
 
-      //             echo 'deploying docker image to EC2...'
-      //             echo "${EC2_PUBLIC_IP}"
-      //             //这里传参把IMAGE_NAME传给script了， script里的$1获取第一个传入的参数
-      //             def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME} ${DOCKER_CREDS_USR} ${DOCKER_CREDS_PSW}"
-      //             def ec2Instance = "ec2-user@${EC2_PUBLIC_IP}"
+                  echo 'deploying docker image to EC2...'
+                  echo "${EC2_PUBLIC_IP}"
+                  //这里传参把IMAGE_NAME传给script了， script里的$1获取第一个传入的参数
+                  def shellCmd = "bash ./server-cmds.sh ${IMAGE_NAME} ${DOCKER_CREDS_USR} ${DOCKER_CREDS_PSW}"
+                  def ec2Instance = "ec2-user@${EC2_PUBLIC_IP}"
 
-      //             sshagent(['ec2-server-key']) {
-      //                 sh "scp -o StrictHostKeyChecking=no server-cmds.sh ${ec2Instance}:/home/ec2-user"
-      //                 sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${ec2Instance}:/home/ec2-user"
-      //                 sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellCmd}"
-      //             }
-      //         }
-      //     }
-      // }
-      // stage("commit version update") {
-      //   steps {
-      //     script {
-      //       //改用ssh
-      //       //withCredentials([usernamePassword(credentialsId: 'github-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                  sshagent(['ec2-server-key']) {
+                      sh "scp -o StrictHostKeyChecking=no server-cmds.sh ${ec2Instance}:/home/ec2-user"
+                      sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${ec2Instance}:/home/ec2-user"
+                      sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellCmd}"
+                  }
+              }
+          }
+      }
+      stage("commit version update") {
+        steps {
+          script {
+            //改用ssh
+            //withCredentials([usernamePassword(credentialsId: 'github-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
             
-      //       //这里重新设置了jenkins container里的一套key,并添加到github
-      //       // withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-container-key', keyFileVariable: 'SSH_PRIVATE_KEY_FILE', passphraseVariable: 'SSH_PASSPHRASE', usernameVariable: 'SSH_USERNAME')]) {
-      //        withCredentials([sshUserPrivateKey(credentialsId: 'github-access-key', keyFileVariable: 'SSH_PRIVATE_KEY_FILE', passphraseVariable: 'SSH_PASSPHRASE', usernameVariable: 'SSH_USERNAME')]) {
-      //       //全局设置往上push的名字和邮箱，只需设置1次，第一次设了就可以
-      //         sh 'git config --global user.email "jenkins@example.com"'
-      //         sh 'git config --global user.name "Jenkins"'
-      //         //查看设置和状态
-      //         sh 'git status'
-      //         sh 'git branch'
-      //         sh 'git config --list'
-      //         //将remote设置为指定url路径，那么后面push的时候就知道origin是什么了
-      //         //set the Git remote URL using environment variables for the GitHub username and password
-      //         //github又弃用了， 改用ssh吧
-      //         sh 'git remote set-url origin git@github.com:mickymacode/java-jenkinsfile-sshagent.git'
-      //         //正常commit并push
-      //         sh 'git add .'
-      //         sh 'git commit -m "ci:version bump"'
-      //         // sh 'ssh -Tv git@github.com'
-      //         sh 'git push -f origin HEAD:refs/heads/jenkins-with-terraform_jobs'
-      //       } 
-      //     }
-      //   }
-      // }
+            //这里重新设置了jenkins container里的一套key,并添加到github
+            // withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-container-key', keyFileVariable: 'SSH_PRIVATE_KEY_FILE', passphraseVariable: 'SSH_PASSPHRASE', usernameVariable: 'SSH_USERNAME')]) {
+             withCredentials([sshUserPrivateKey(credentialsId: 'github-access-key', keyFileVariable: 'SSH_PRIVATE_KEY_FILE', passphraseVariable: 'SSH_PASSPHRASE', usernameVariable: 'SSH_USERNAME')]) {
+            //全局设置往上push的名字和邮箱，只需设置1次，第一次设了就可以
+              sh 'git config --global user.email "jenkins@example.com"'
+              sh 'git config --global user.name "Jenkins"'
+              //查看设置和状态
+              sh 'git status'
+              sh 'git branch'
+              sh 'git config --list'
+              //将remote设置为指定url路径，那么后面push的时候就知道origin是什么了
+              //set the Git remote URL using environment variables for the GitHub username and password
+              //github又弃用了， 改用ssh吧
+              sh 'git remote set-url origin git@github.com:mickymacode/java-jenkinsfile-sshagent.git'
+              //正常commit并push
+              sh 'git add .'
+              sh 'git commit -m "ci:version bump"'
+              // sh 'ssh -Tv git@github.com'
+              sh 'git push -f origin HEAD:refs/heads/jenkins-with-terraform_jobs'
+            } 
+          }
+        }
+      }
   }
 }
