@@ -42,7 +42,10 @@ Docker is installed on the host machine
 
     (got the endpoint: https://xxxxxxxxxxxxxx.ngrok-free.app)
 
+    Once ngrok stop(terminal closed, the public ip will not work)
+
     6.2 add Webhook in Github repository:
 
     Playload URL: https://xxxxxxxxxxxxxx.ngrok-free.app/github-webhook/
+
     Content type: application/json
