@@ -49,3 +49,9 @@ Docker is installed on the host machine
     Playload URL: https://xxxxxxxxxxxxxx.ngrok-free.app/github-webhook/
 
     Content type: application/json
+
+7.  The jenkins pipline run and an AWS instance will be provisioned,
+
+The 'java-maven-app' and 'postgres' 2 containers are successfully running
+
+browser: ec2 instance public ip:8080 open the jave-maven-app page
