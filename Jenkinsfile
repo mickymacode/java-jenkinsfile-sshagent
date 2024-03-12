@@ -18,7 +18,7 @@ pipeline {
   }
   //和之前的env.IMAGE_NAME = "$version-$BUILD_NUMBER" 写法不同，给environment一个变量，并赋值
   environment {
-      IMAGE_NAME = 'mickyma22/my-repo:java-maven-1.0'
+      IMAGE_NAME = 'mickyma22/my-repo:java-maven-2.0'
   }
   stages {
       stage("increment version") {
