@@ -2,13 +2,6 @@
 
 // library identifier: 'jenkins-shared-library@master', retriever: modernSCM(
 //     [$class: 'GitSCMSource',
-//      remote: 'https://gitlab.com/nanuchi/jenkins-shared-library.git',
-//      credentialsId: 'gitlab-credentials'
-//     ]
-// )
-
-// library identifier: 'jenkins-shared-library@master', retriever: modernSCM(
-//     [$class: 'GitSCMSource',
 //      //这个位置之前连接GitHub和jenkins时，用https不行，改用ssh，所以这个应该不work
 //      remote: 'https://github.com/MaMickey/jenkins-shared-library.git',
 //      //这个是存在jenkin的属于连接github的credential
