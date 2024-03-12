@@ -124,7 +124,7 @@ pipeline {
               //将remote设置为指定url路径，那么后面push的时候就知道origin是什么了
               //set the Git remote URL using environment variables for the GitHub username and password
               //github又弃用了， 改用ssh吧
-              sh 'git remote set-url origin git@github.com:MaMickey/java-jenkinsfile-sshagent.git'
+              sh 'git remote set-url origin git@github.com:mickymacode/java-jenkinsfile-sshagent.git'
               //正常commit并push
               sh 'git add .'
               sh 'git commit -m "ci:version bump"'
